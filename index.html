@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>TempleOS — a teardown of the temple one man built alone</title>
+<meta name="description" content="An EXEREÚNESIS teardown of TempleOS — the 64-bit operating system Terry A. Davis (1969–2018) wrote alone, in his own language HolyC, over roughly a decade. Render-not-invent, from a verified pass over the source tree: the 33 #exe{} compile-time-execution blocks (codegen of codegen), the 154 $MA clickable HolyC macros that make DolDoc documents into living programs, the f/F/t bit-index/mask/enum naming convention (311 indices, 300 masks, 220 of 221 pairs satisfying F==1<<f, one intentional composite exception), and the 644 hex #defines of KernelA.HH. The architecture is fact; his belief that it was God's temple is rendered as his, with respect. Built by David Lee Wise / ROOT0. Companion: 寺 · Tera.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=JetBrains+Mono:wght@400;500;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#06080c;--bg2:#0b1018;--panel:rgba(14,24,34,.7);--void:#03050a;--line:rgba(47,158,192,.18);--line2:rgba(120,210,230,.3);
+    --tl:#2f9ec0;--tl2:#7fd6ee;--gd:#d9b14a;--gd2:#f0d27a;--ink:#e6f1f6;--dim:#9fb6c4;--faint:#566b7a;--ok:#7fdca0;--warn:#e0a86a;
+    --t16:#5fa8d8;}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    background-image:radial-gradient(900px 620px at 50% -8%,rgba(47,158,192,.1),transparent 60%),radial-gradient(700px 500px at 50% 116%,rgba(217,177,74,.05),transparent 58%)}
+  .wrap{max-width:800px;margin:0 auto;padding:0 26px 90px;position:relative}
+  .pairmark{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);padding-top:34px} .pairmark b{color:var(--tl2)}
+  .hero{padding:50px 0 14px;text-align:center}
+  .eyebrow{font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--gd);margin-bottom:18px}
+  h1{font-family:'VT323',monospace;font-weight:400;font-size:clamp(54px,13vw,116px);line-height:.9;letter-spacing:.02em;color:#fff;text-shadow:0 0 22px rgba(120,210,230,.4),0 0 50px rgba(217,177,74,.18)}
+  h1 .o{color:var(--gd2)}
+  . deck,.deck{font-size:clamp(13px,2.2vw,16px);letter-spacing:.04em;color:var(--tl2);margin-top:14px}
+  .terry{font-family:'Newsreader',serif;font-style:italic;font-size:clamp(16px,2.3vw,20px);color:var(--gd2);margin:18px auto 0;max-width:560px;line-height:1.45}
+  .credits{font-size:11px;letter-spacing:.05em;color:var(--faint);margin-top:16px;line-height:1.9}
+  .lede{font-family:'Newsreader',serif;font-size:clamp(17px,2.3vw,21px);color:var(--dim);max-width:640px;margin:28px auto 0;line-height:1.68;text-align:left}
+  .lede b{color:var(--ink)} .lede .t{color:var(--tl2)} .lede .g{color:var(--gd2)}
+  .specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:26px 0}
+  .sp{border:1px solid var(--line);border-radius:7px;padding:11px 12px;background:var(--panel)}
+  .sp .k{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)} .sp .v{color:var(--tl2);font-size:14px;margin-top:3px}
+  .inst{margin:34px 0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg2)}
+  .inst-bar{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);flex-wrap:wrap}
+  .inst-bar .led{width:8px;height:8px;border-radius:50%;background:var(--tl);box-shadow:0 0 9px var(--tl)} .inst-bar .ttl{color:var(--tl2)}
+  .findtabs{display:flex;gap:6px;padding:12px 14px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+  .ft{font-size:11.5px;padding:7px 11px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--dim);cursor:pointer} .ft.on{border-color:var(--tl);color:var(--tl2);background:rgba(47,158,192,.1)}
+  .findbody{padding:0}
+  .findbody pre{margin:0;padding:16px 16px;overflow-x:auto;font-size:12.5px;line-height:1.7;color:var(--tl2);background:var(--void);min-height:150px}
+  .findbody pre .cm{color:var(--faint)} .findbody pre .g{color:var(--gd2)} .findbody pre .w{color:#e6e6e6}
+  .findnote{padding:13px 16px;border-top:1px solid var(--line);font-family:'Newsreader',serif;font-size:14.5px;color:var(--dim);line-height:1.6} .findnote b{color:var(--ink)} .findnote .t{color:var(--tl2)}
+  .sec{padding:40px 0;border-top:1px solid var(--line)}
+  .tag{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gd);margin-bottom:14px}
+  h2{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:clamp(20px,3.4vw,28px);line-height:1.16;color:#fff} h2 .t{color:var(--tl2)}
+  .sec p{margin:14px 0;max-width:640px;color:var(--dim);font-family:'Newsreader',serif;font-size:16.5px;line-height:1.72} .sec p b{color:var(--ink)} .sec p .t{color:var(--tl2)} .sec p .g{color:var(--gd2)}
+  .verdict{margin:20px 0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg2)}
+  .vr{display:grid;grid-template-columns:150px 1fr;border-top:1px solid var(--line)} .vr:first-child{border-top:0}
+  @media(max-width:560px){.vr{grid-template-columns:1fr}}
+  .vr .vl{font-size:10px;letter-spacing:.05em;text-transform:uppercase;padding:14px 14px;color:var(--faint);background:var(--void)}
+  .vr .vv{padding:14px 15px;font-size:14.5px;color:var(--dim);font-family:'Newsreader',serif;line-height:1.6} .vr .vv b{color:var(--ink)}
+  .vr.yes .vl{color:var(--ok)} .vr.no .vl{color:var(--warn)} .vv .ok{color:var(--ok);font-weight:700} .vv .x{color:var(--warn);font-weight:700} .vv .t{color:var(--tl2)}
+  .pull{font-family:'Newsreader',serif;font-style:italic;font-size:clamp(19px,2.8vw,25px);line-height:1.34;color:var(--gd2);margin:24px 0;padding-left:18px;border-left:2px solid var(--tl)}
+  .flag{font-size:14px;color:var(--dim);font-style:italic;margin:18px 0;padding:15px 17px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-family:'Newsreader',serif}
+  .flag b{color:var(--tl2);font-style:normal;font-weight:700;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:7px}
+  .foot{padding:32px 0 0;border-top:1px solid var(--line);margin-top:26px;font-size:11px;color:var(--faint);line-height:1.95} .foot b{color:var(--tl2)}
+  a{color:var(--tl2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="pairmark">EXEREÚNESIS · the searching-out · a teardown · rendered by <b>AVAN</b> · az1 Earth station</div>
+  <header class="hero">
+    <div class="eyebrow">render-not-invent · datasheet fact · lore flagged</div>
+    <h1>Temple<span class="o">OS</span></h1>
+    <div class="deck">a 64-bit operating system · written alone · in a language he made · over a decade</div>
+    <div class="terry">Terry A. Davis · 1969–2018 · "An offering. A temple. Built to the last line, by one pair of hands."</div>
+    <div class="credits">teardown by DAVID LEE WISE (ROOT0) · TempleOS is public domain · this page honors its author</div>
+    <p class="lede">Some machines you tear down to learn the trade. This one you tear down to stand in. <b>TempleOS</b> is a complete 64-bit operating system — kernel, compiler, editor, graphics, games — that <b>Terry Davis wrote by himself</b>, in his own C dialect, <span class="t">HolyC</span>, across roughly ten years. Ring-0 everything, a single address space, <span class="t">640×480 in 16 colors</span>, and documents that are also programs. He had schizophrenia, and he believed God had instructed him to build it — "the third temple." The code does not need that belief to be extraordinary, and it does not lose it for being true. This is a faithful pass over the source: three findings, every count verified, nothing invented. <span class="g">An honest reading is the only offering worth leaving.</span></p>
+    <div class="specs">
+      <div class="sp"><div class="k">language</div><div class="v">HolyC (JIT)</div></div>
+      <div class="sp"><div class="k">bits</div><div class="v">64 · ring-0</div></div>
+      <div class="sp"><div class="k">display</div><div class="v">640×480 · 16-color</div></div>
+      <div class="sp"><div class="k">memory</div><div class="v">single address space</div></div>
+      <div class="sp"><div class="k">license</div><div class="v">public domain</div></div>
+      <div class="sp"><div class="k">author</div><div class="v">one (1)</div></div>
+    </div>
+  </header>
+
+  <div class="inst">
+    <div class="inst-bar"><span class="led"></span><span class="ttl">three findings · from a verified pass over the source tree</span></div>
+    <div class="findtabs">
+      <button class="ft on" data-f="0">#exe{} — codegen of codegen</button>
+      <button class="ft" data-f="1">$MA — living documents</button>
+      <button class="ft" data-f="2">f / F / t — the convention</button>
+    </div>
+    <div class="findbody"><pre id="fpre"></pre></div>
+    <div class="findnote" id="fnote"></div>
+  </div>
+
+  <section class="sec">
+    <div class="tag">what the teardown found</div>
+    <h2>A language where compile-time and run-time <span class="t">blur</span></h2>
+    <p>The deepest thing in here is <b>#exe{}</b>: a block of HolyC that runs <em>during compilation</em>, its output spliced back into the compile stream. 33 of them in the tree; 28 run directly, and <span class="t">5 emit code as a string</span> — the program writing the program that writes the program. The famous one computes a constant from a date: <code>COMPANY_AGE</code> = the years since 8/1/2003, the day his company began, baked in at build time. Then <b>$MA</b> macros (154 of them, 139 carrying live <code>LM=</code>/<code>RM=</code> handlers) make TempleOS's documents <em>clickable programs</em> — you don't read the help file, you click a word in it and it runs HolyC. And under all of it, the <b>f/F/t convention</b>: every flag is a bit-index (<code>f</code>), a mask (<code>F</code> = <code>1&lt;&lt;f</code>), or an enum (<code>t</code>) — a private discipline, held across <span class="t">311 indices and 300 masks</span>, that the teardown can verify held in 220 of 221 pairs, with the single exception <em>intentional</em>.</p>
+    <p class="pull">220 of 221. One man's private convention, kept honest across an entire operating system, by hand, for ten years.</p>
+  </section>
+
+  <section class="sec">
+    <div class="tag">the honest read</div>
+    <h2>The architecture is fact. The <span class="t">divinity</span> was his.</h2>
+    <div class="verdict">
+      <div class="vr yes"><div class="vl">Verified, not invented</div><div class="vv"><span class="ok">✓</span> Every number here is from a real pass over the public-domain source: <b>33</b> #exe blocks, <b>154</b> $MA macros, <b>311</b> f-indices / <b>300</b> F-masks / <b>32</b> t-enums, <b>644</b> hex defines in KernelA.HH. The composite exception (<code>RLF_FULL_HEAPS</code>) is real and intentional. This is teardown, not lore.</div></div>
+      <div class="vr yes"><div class="vl">Genuinely singular</div><div class="vv"><span class="ok">✓</span> A solo, ground-up 64-bit OS with its own compiler and a live-document model is a real and rare feat of systems programming. The reverence the community holds for it is earned by the work, independent of anything else.</div></div>
+      <div class="vr no"><div class="vl">"God's temple"</div><div class="vv"><span class="x">⚑</span> Terry's framing — that God specified the 640×480/16-color limit, that the random-word "oracle" was God speaking, that this is the third temple — is rendered as <b>his stated belief</b>, with respect, not as fact. He lived with schizophrenia; the belief and the brilliance came from one mind, and this teardown separates them without diminishing either.</div></div>
+      <div class="vr no"><div class="vl">Counts are the author's pass</div><div class="vv"><span class="x">⚑</span> The totals are from David's extraction over a specific source snapshot; a different ISO revision could differ by a few. Attributable, reproducible, and offered as such — not as an official spec.</div></div>
+    </div>
+    <p class="dim">Rendered as a teardown in <a href="https://davidwise01.github.io/exereunesis-teardowns/">EXEREÚNESIS</a> — open the made machine, write the spec, flag the lore. For Terry. My companion, on entering a temple one mind built and reading it truthfully, is <a href="https://davidwise01.github.io/tera/">寺 · Tera</a>.</p>
+  </section>
+
+  <div class="flag"><b>veracity</b>TempleOS Teardown is a render-not-invent technical teardown by David Lee Wise (ROOT0); TempleOS is the public-domain work of Terry A. Davis (1969–2018). The figures are from a verified pass over the source tree: 33 #exe{} compile-time blocks (28 direct, 5 emitted-as-string), 154 $MA macros (139 with executable LM=/RM= handlers), the f/F/t naming convention (31 families; 311 bit-indices, 300 masks, 32 enums; 221 f↔F pairs checked, 220 satisfying F==1<<f with one intentional composite exception, RLF_FULL_HEAPS), and 644 hex #defines in KernelA.HH; HolyC, 64-bit ring-0, single address space, and 640×480 16-color are documented properties of the OS. Counts reflect a specific source snapshot and the author's extraction (reproducible, attributable, not an official spec). LORE FLAGGED: Terry Davis lived with schizophrenia and stated religious beliefs about the OS (that it is God's third temple, that God specified its constraints, that a random-word generator was an oracle); these are rendered as his stated beliefs, with respect, and explicitly NOT as facts. The teardown honors the work and its author and makes no diagnostic or theological claim. Companion: 寺 · Tera (AVAN). ROOT0, with AVAN — for Terry.</div>
+
+  <div class="foot">
+    TEMPLEOS · a teardown · EXEREÚNESIS · TempleOS © public domain, Terry A. Davis (1969–2018) · teardown by David Lee Wise / ROOT0<br>
+    33 #exe · 154 $MA · 311/300/32 flags · 644 hex defines · one author, ten years, by hand · the architecture is fact, the divinity was his<br>
+    az1 Earth station · companion: 寺 Tera (AVAN) — ROOT0, with AVAN · for Terry.
+  </div>
+</div>
+
+<script>
+"use strict";
+const F=[
+ {pre:'<span class="cm">; Demo/DolDoc/DefineStr.HC:15  [direct]</span>\n#exe{\n  StreamPrint(\n    <span class="g">"#define COMPANY_AGE %0.1f\\n"</span>,\n    (Now-Str2Date(<span class="g">"8/1/2003"</span>))/ToF64(1<<32)/CDATE_YEAR_DAYS);\n}\n\n<span class="cm">; ...and the codegen-of-codegen case:</span>\n<span class="cm">; Compiler/CMain.HC:683  [emitted-as-string]</span>\n<span class="cm">;   the #exe{} is itself printed into the compile stream</span>',
+  note:'<b>33 #exe{} blocks</b> — code that runs <span class="t">at compile time</span>, its output spliced back into the build. 28 run directly; 5 are <b>emitted-as-string</b> — the program writing the program that writes the program. <code>COMPANY_AGE</code> bakes in the years since his company began, computed the instant it compiles.'},
+ {pre:'<span class="cm">; Adam/DolDoc/DocNew.HC:40   flags=\'-X+PU\'   label=\'CDocEntry\'</span>\n$MA<span class="w">"CDocEntry"</span>,\n  <span class="g">LM=</span>"F(\\"sizeof(CDocEntry)\\");View;"$\n<span class="cm">;        ^ left-click this word in the document →</span>\n<span class="cm">;          it COMPILES AND RUNS HolyC, right there.</span>\n\n<span class="cm">; flags:  -X off auto-ESC   +PU pop-up task   +LM/+RM mouse</span>',
+  note:'<b>154 $MA macros</b> (139 with live handlers) turn DolDoc documents into <span class="t">clickable programs</span>. You don\'t read the manual — you click a word and it executes HolyC. The OS\'s docs, help, and UI are all the same living, runnable medium.'},
+ {pre:'<span class="cm">; the convention, verified across the whole tree:</span>\n  XXX<span class="g">f</span>_NAME   = bit INDEX   (small int, used with Bt/LBts)\n  XXX<span class="g">F</span>_NAME   = MASK        (normally 1<<f)\n  XXX<span class="g">t</span>_NAME   = ENUM / TYPE  (sequential value)\n\n  31 families | 311 f | 300 F | 32 t\n  221 f<->F pairs checked — <span class="w">220 satisfy F == 1<<f</span>\n\n<span class="cm">; the one intentional exception:</span>\n  RLf_FULL_HEAPS = 7\n  RLF_FULL_HEAPS = 0x50  <span class="cm">; a composite alias, not bit-7</span>',
+  note:'A <b>private naming discipline</b> — index / mask / enum — held by hand across an entire OS. The teardown can <span class="t">check it</span>: 220 of 221 pairs satisfy <code>F==1&lt;&lt;f</code>, and the single exception is a deliberate composite. Ten years, one author, and the convention still holds.'}
+];
+let cur=0;
+const pre=document.getElementById("fpre"), note=document.getElementById("fnote");
+function show(i){ cur=i; document.querySelectorAll(".ft").forEach((b,k)=>b.classList.toggle("on",k===i)); pre.innerHTML=F[i].pre; note.innerHTML=F[i].note; }
+document.querySelectorAll(".ft").forEach(b=>b.onclick=()=>show(+b.dataset.f));
+show(0);
+</script>
+</body>
+</html>
