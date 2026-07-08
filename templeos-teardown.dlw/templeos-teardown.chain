@@ -4,6 +4,6 @@ slug  : templeos-teardown
 seal  : 62cb38eb14510cbb3f7d9a8d0decb7f05f28ee494b334ee2d80b1632b6d16871
 prev  : c49d70bfa7b183ef83d422a9d2e44b12d914c67573f4d935e527e9427e626841
 link  : 62aa1e817e597cfb2a57f510a2c1b7054155d3b3e6b5fedbf71f4037010f70fa
-head  : 3447d3a0533aaf1e29a8bdc67a9774884fb3ae9dbc8a17064b7a008ca3c4ec90
+head  : 13f9ace173ef2e60af38912ba329b4afcb5a38b84a0e4495e8d30327f8c99cc2
 
 — the tether: link = sha256(index|slug|seal|prev). the chain head commits to the whole corpus.
